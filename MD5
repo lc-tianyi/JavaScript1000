@@ -1,0 +1,61 @@
+const crypto = require('crypto')
+// 梯度 0  （MD5 裸算，10 题）
+// 1. 计算字符串 `"abc"` 的 MD5 十六进制。
+function abc(){
+    return crypto.createHash('md5').update('abc').digest('hex')
+}
+console.log(abc())
+// 2. 计算 `"abc"` + `"123"` 拼接后的 MD5。
+function abc(){
+    return crypto.createHash('md5').update('abc' + String(123)).digest('hex')
+}
+console.log(abc())
+// 3. 把当前时间戳（秒）转字符串后算 MD5 并打印。
+function shi_jian(){
+    const shi = new Date('2025-11-10T22:27').getTime()
+    return crypto.createHash('md5').update(String(shi)).digest('hex')
+}
+console.log(shi_jian())
+// 4. 写一个函数 `md5_hex(str)` 返回小写 32 位。
+function md5_hex(str){
+    return crypto.createHash('md5').update(str).digest('hex')
+}
+console.log(md5_hex('123456'))
+// 5. 写一个函数 `md5_upper(str)` 返回大写 32 位。
+function md5_str(str){
+    return crypto.createHash('md5').update(str).digest('hex').toUpperCase()
+}
+console.log(md5_str('123456'))
+// 6. 写一个函数 `md5_twice(str)` 做双重 MD5。
+function md5_twice(str){
+    const md5_twices = crypto.createHash('md5').update(str).digest('hex')
+    return crypto.createHash('md5').update(md5_twices).digest('hex')
+}
+console.log(md5_twice('24264564321'))
+// 7. 写一个函数 `md5_slice(str)` 取中间 16 位（8-24）。
+function md5_slice(str){
+    // 索引：slice()
+    return crypto.createHash('md5').update(str).digest('hex').slice(8,24)
+}
+console.log(md5_slice('1231324654'))
+// 8. 写一个函数 `md5_reverse(str)` 把 32 位结果反转再输出。
+function md5_reverse(str){
+    return crypto.createHash('md5').update(str).digest('hex').split('').reverse().join('')
+}
+console.log(md5_reverse('12234564654'))
+// 9. 写一个函数 `md5_salted(str, salt)` 先拼盐再算。
+function md5_salted(str, salt){
+    const ase = str + salt
+    return crypto.createHash('md5').update(ase).digest('hex')
+}
+console.log(md5_salted('dfdfgdf','644654123'))
+// 10. 写一个函数 `md5_chunk(str, size=8)` 把结果每 size 字符用 `-` 连接。
+function md5_chunk(str,size=8){
+    const hade =  crypto.createHash('md5').update(str).digest('hex');
+    const hex = [];
+    for (let i = 0; i < hade.length; i += size){
+        hex.push(hade.slice(i, i + size));
+    }
+    return hex.join('-');
+}
+console.log(md5_chunk('5451dsf1sdfs2121'))
