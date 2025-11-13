@@ -59,3 +59,93 @@ function md5_chunk(str,size=8){
     return hex.join('-');
 }
 console.log(md5_chunk('5451dsf1sdfs2121'))
+
+// 🟢 梯度 1  （MD5+字典序签名，10 题）
+// 11. 给定对象 `{a:1,b:2}` 按 key 排序后拼成 `"a1b2"` 再算 MD5。
+function md5_key(){
+    data = {a: 1, b: 2};
+    let s = '';
+    // 用枚举法按照顺序把数据抽出来做排序，在用key和值拼接。
+    for (const k of Object.keys(data).sort()) s += k + data[k];
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(md5_key())
+// 12. 把题目11的结果封装成函数 `sign_basic(obj)`。
+function sign_basic(obj) {
+    let s = '';
+    for (const k of Object.keys(obj).sort()) s += k + obj[k];
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_basic({a: 1, b: 2}))
+// // // 13. 把 `{c:3,a:1,b:2}` 同样处理，验证顺序是否一致。
+ function sign_basic(obj){
+     let s = '';
+     for (const k of Object.keys(obj).sort()) s += k + obj[k];
+     return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_basic({c:3,a:1,b:2}))
+// 14. 把 `{z:26,y:25,x:24}` 处理并打印 MD5。
+function sign_basic(obj){
+    let s = '';
+    for (const k of Object.keys(obj).sort()) s += k + obj[k];
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_basic({z:26,y:25,x:24}))
+// 15. 把 `{k:{},t:1}` 中对象转 JSON 字符串后参与拼接再 MD5。
+function sign_json(obj){
+    let s = '';
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_json({k:{},t:1}))
+// 16. 把 `{list:[1,2,3],name:"abc"}` 中数组转 JSON 后拼接再 MD5。
+function sign_json(obj){
+    let s = '';
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_json({list:[1,2,3],name:"abc"}))
+// 17. 写一个通用函数 `sign_json(obj, salt)` 盐放最前再拼接。
+function sign_json(obj,salt){
+    s = String(salt)
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+console.log(sign_json({list:[1,2,3],name:"abc"},'1546'))
+// 18. 把当前时间戳（毫秒）作为字段 `ts` 放入对象再签名。
+function sign_json(obj,salt){
+    s = String(salt)
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    return crypto.createHash('md5').update(s).digest('hex')
+}
+const data = { list: [1, 2, 3], name: 'abc', ts: Date.now() };
+console.log(sign_json(data,'2025-01-01T00:00'))
+// 19. 把题 18 封装成 `sign_with_ts(obj, salt)` 并返回 `{obj, sign}`。
+function sign_with_ts(obj,salt){
+    s = String(salt)
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    const sign_1 = crypto.createHash('md5').update(s).digest('hex')
+    return {obj,sign_1}
+}
+const data = { list: [1, 2, 3], name: 'abc', ts: Date.now() };
+console.log(sign_with_ts(data,'2025-01-01T00:00'))
+// 20. 把题 19 结果通过 `fetch` POST 到 `http://httpbin.org/post` 看回显。
+function sign_with_ts(obj,salt){
+    s = String(salt)
+    for (const k of Object.keys(obj).sort()) s += k + JSON.stringify(obj[k])
+    const sign_1 = crypto.createHash('md5').update(s).digest('hex')
+    return {obj,sign_1}
+}
+const data = { list: [1, 2, 3], name: 'abc', ts: Date.now() };
+const body = sign_with_ts(data,'2025-01-01T00:00')
+const url = 'http://httpbin.org/post'
+fetch(url,{
+    method:'post',
+    headers: {
+        'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Safari/537.36',
+        body: JSON.stringify(body)
+    }
+})
+.then(res => res.json())
+.then(json => console.log('服务器回显:\n', json.data))
+.catch(err => console.error('请求失败:', err.message));
